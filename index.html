@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ff6b35">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Wade's Funny Videos and More</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#fffaf2;color:#171717;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:2px solid #171717;padding:16px 5%;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900}.logo b{color:#ff6b35}nav button{border:0;background:none;font-weight:800;margin-left:8px;cursor:pointer}
+.hero{padding:55px 5%;background:linear-gradient(135deg,#ffe9b5,#ffd0bf);text-align:center}.hero h1{font-size:clamp(2.5rem,8vw,5rem);line-height:.95;margin:0 0 16px}.hero p{font-size:1.15rem}
+.btn{background:#171717;color:#fff;border:2px solid #171717;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}
+section{padding:40px 5%}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.card{background:#fff;border:2px solid #171717;border-radius:18px;overflow:hidden;box-shadow:5px 5px 0 #171717}.pic{height:190px;background:#ffd166;display:grid;place-items:center;font-size:4rem}.info{padding:18px}.price{font-size:1.2rem;font-weight:900}.muted{color:#666}
+.admin{background:#171717;color:#fff}.panel{max-width:850px;background:#292929;padding:22px;border-radius:18px}.panel input{padding:11px;border-radius:9px;border:0;margin:5px;width:min(100%,300px)}
+.modal{display:none;position:fixed;inset:0;background:#0009;z-index:10;place-items:center;padding:18px}.modal.show{display:grid}.box{background:#fff;border-radius:18px;padding:22px;width:min(100%,500px);max-height:85vh;overflow:auto}.x{float:right;cursor:pointer;font-size:1.5rem}
+footer{background:#111;color:#fff;text-align:center;padding:28px 5%}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">Wade's <b>Funny Videos</b> and More</div>
+<nav><button onclick="document.getElementById('shop').scrollIntoView()">Shop</button><button onclick="openCart()">🛒 <span id="count">0</span></button></nav>
+</header>
+
+<section class="hero">
+<h1>Funny videos.<br>Cool merch.</h1>
+<p>Official-style merch for Wade's Funny Videos and More.</p>
+<button class="btn" onclick="document.getElementById('shop').scrollIntoView()">Shop now</button>
+</section>
+
+<section id="shop">
+<h2>🛍️ Merch</h2><div class="grid" id="products"></div>
+</section>
+
+<section class="admin">
+<div class="panel">
+<h2>🔐 Owner Area</h2>
+<p>Demo owner access. Enter your owner code to manage products.</p>
+<input id="owner" type="password" placeholder="Owner code">
+<button class="btn" onclick="unlock()">Unlock</button>
+<div id="ownerMsg"></div>
+<div id="tools" style="display:none">
+<hr>
+<h3>Add merchandise</h3>
+<input id="name" placeholder="Product name"><input id="price" type="number" step=".01" placeholder="Price">
+<button class="btn" onclick="addProduct()">Add</button>
+<h3>Friend discounts</h3>
+<p>Two friend-code slots are reserved for discount codes.</p>
+<input id="friend1" placeholder="Friend code 1"><input id="friend2" placeholder="Friend code 2">
+<button class="btn" onclick="saveFriends()">Save codes</button>
+<p id="friendMsg" class="muted"></p>
+</div>
+</div>
+</section>
+
+<footer>© 2026 Wade's Funny Videos and More</footer>
+
+<div id="cart" class="modal"><div class="box"><span class="x" onclick="closeCart()">×</span><h2>Your Cart</h2><div id="items"></div><h3 id="total">$0.00</h3><p class="muted">Checkout is disabled in this demo. A real payment provider can be connected later.</p></div></div>
+
+<script>
+const OWNER="I-LOVE-TADC";
+let products=[
+{id:1,n:"Wade's Funny Videos T-Shirt",p:24.99,e:"👕"},
+{id:2,n:"Wade's Funny Videos Hoodie",p:44.99,e:"🧥"},
+{id:3,n:"Funny Videos Sticker Pack",p:7.99,e:"⭐"}
+],cart=[];
+function money(x){return "$"+x.toFixed(2)}
+function render(){document.getElementById("products").innerHTML=products.map(x=>`<article class="card"><div class="pic">${x.e}</div><div class="info"><b>${x.n}</b><p class="price">${money(x.p)}</p><p class="muted">Fun channel merch.</p><button class="btn" onclick="add(${x.id})">Add to cart</button></div></article>`).join("");document.getElementById("count").textContent=cart.length}
+function add(id){cart.push(products.find(x=>x.id===id));render();openCart()}
+function openCart(){document.getElementById("cart").classList.add("show");let t=cart.reduce((a,x)=>a+x.p,0);document.getElementById("items").innerHTML=cart.length?cart.map(x=>`<p>${x.n} — ${money(x.p)}</p>`).join(""):"<p>Your cart is empty.</p>";document.getElementById("total").textContent=money(t)}
+function closeCart(){document.getElementById("cart").classList.remove("show")}
+function unlock(){let m=document.getElementById("ownerMsg");if(document.getElementById("owner").value===OWNER){document.getElementById("tools").style.display="block";m.textContent="Owner area unlocked."}else m.textContent="Incorrect owner code."}
+function addProduct(){let n=document.getElementById("name").value.trim(),p=Number(document.getElementById("price").value);if(!n||!p)return;products.push({id:Date.now(),n,p,e:"🛍️"});render();document.getElementById("name").value="";document.getElementById("price").value=""}
+function saveFriends(){localStorage.setItem("friend1",document.getElementById("friend1").value);localStorage.setItem("friend2",document.getElementById("friend2").value);document.getElementById("friendMsg").textContent="Friend codes saved on this device."}
+render();
+</script>
+<script>if("serviceWorker" in navigator)navigator.serviceWorker.register("./service-worker.js");</script>
+</body></html>
